@@ -1,8 +1,10 @@
+
+
 import React, { useState } from "react";
 import axios from "axios";
 import Loader from "../components/Loader";
 
-export default function Component() {
+export default function ResumeShortlisting() {
   const [uploading, setUploading] = useState(false);
   const [fitResult, setFitResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -11,18 +13,19 @@ export default function Component() {
     const file = event.target.files[0];
     if (file) {
       setUploading(true);
-      
+
       const formData = new FormData();
       formData.append("file", file);
       formData.append("job_description", jobDescription);
 
       try {
         setLoading(true);
-        const response = await axios.post("http://localhost:5000/upload", formData, {
+        const response = await axios.post("http://127.0.0.1:5000/upload", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
+        console.log(response.data);
         setFitResult(response.data);
       } catch (error) {
         console.error("Error uploading file:", error);
@@ -39,7 +42,9 @@ export default function Component() {
       <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100">
         <div className="container mx-auto px-4 md:px-6 space-y-6 text-center">
           <div className="space-y-3">
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Resume Shortlisting App</h1>
+            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+              Resume Shortlisting App
+            </h1>
             <p className="mx-auto max-w-[700px] text-gray-600 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
               We're looking for talented individuals to help us build the future of our company. Check out our open
               positions below.
@@ -50,7 +55,7 @@ export default function Component() {
       <section className="w-full py-12 md:py-24 lg:py-32">
         <div className="container mx-auto grid gap-8 px-4 md:px-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {jobPositions.map((job, index) => (
-            <Card key={index} {...job} onFileUpload={handleFileUpload} />
+            <JobCard key={index} {...job} onFileUpload={handleFileUpload} />
           ))}
         </div>
       </section>
@@ -59,11 +64,13 @@ export default function Component() {
         <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100">
           <div className="container mx-auto px-4 md:px-6 space-y-4">
             <h2 className="text-2xl font-bold">Fit Score: {fitResult.fit_score.toFixed(2)}%</h2>
-            <p className="mt-4"><strong>Primary Skills:</strong> {fitResult.primary_skills.join(", ")}</p>
-            <p className="mt-4"><strong>Secondary Skills:</strong> {fitResult.secondary_skills.join(", ")}</p>
-            <p className="mt-4"><strong>Soft Skills:</strong> {fitResult.soft_skills.join(", ")}</p>
-            <p className="mt-4"><strong>Objectives:</strong> {fitResult.objectives}</p>
-            <p className="mt-4"><strong>Description:</strong> {fitResult.description}</p>
+            <p className="mt-4"><strong>First Name:</strong> {fitResult.first_name}</p>
+            <p className="mt-4"><strong>Last Name:</strong> {fitResult.last_name}</p>
+            <p className="mt-4"><strong>Name:</strong> {fitResult.full_name}</p>
+            <p className="mt-4"><strong>Email:</strong> {fitResult.email}</p>
+            <p className="mt-4"><strong>Phone:</strong> {fitResult.phone}</p>
+            <p className="mt-4"><strong>Skills:</strong> {fitResult.skills.join(", ")}</p>
+            <p className="mt-4"><strong>Job Description:</strong> {fitResult.description}</p>
           </div>
         </section>
       )}
@@ -94,7 +101,7 @@ const jobPositions = [
   }
 ];
 
-function Card({ title, description, content, onFileUpload }) {
+function JobCard({ title, description, content, onFileUpload }) {
   return (
     <div className="flex flex-col bg-white rounded-lg shadow-lg p-6">
       <div>
@@ -149,3 +156,4 @@ function UploadIcon(props) {
     </svg>
   );
 }
+
