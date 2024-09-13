@@ -1,5 +1,3 @@
-
-
 import React, { useState } from "react";
 import axios from "axios";
 import Loader from "../components/Loader";
@@ -13,20 +11,23 @@ export default function ResumeShortlisting() {
     const file = event.target.files[0];
     if (file) {
       setUploading(true);
-
       const formData = new FormData();
       formData.append("file", file);
       formData.append("job_description", jobDescription);
 
       try {
         setLoading(true);
-        const response = await axios.post("http://127.0.0.1:5000/upload", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        const response = await axios.post(
+          "http://127.0.0.1:5000/upload",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
         console.log(response.data);
-        setFitResult(response.data);
+        setFitResult(response.data); // Assuming response includes experience and education details
       } catch (error) {
         console.error("Error uploading file:", error);
       } finally {
@@ -46,8 +47,8 @@ export default function ResumeShortlisting() {
               Resume Shortlisting App
             </h1>
             <p className="mx-auto max-w-[700px] text-gray-600 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              We're looking for talented individuals to help us build the future of our company. Check out our open
-              positions below.
+              We're looking for talented individuals to help us build the future
+              of our company. Check out our open positions below.
             </p>
           </div>
         </div>
@@ -63,14 +64,72 @@ export default function ResumeShortlisting() {
       {fitResult && (
         <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100">
           <div className="container mx-auto px-4 md:px-6 space-y-4">
-            <h2 className="text-2xl font-bold">Fit Score: {fitResult.fit_score.toFixed(2)}%</h2>
-            <p className="mt-4"><strong>First Name:</strong> {fitResult.first_name}</p>
-            <p className="mt-4"><strong>Last Name:</strong> {fitResult.last_name}</p>
-            <p className="mt-4"><strong>Name:</strong> {fitResult.full_name}</p>
-            <p className="mt-4"><strong>Email:</strong> {fitResult.email}</p>
-            <p className="mt-4"><strong>Phone:</strong> {fitResult.phone}</p>
-            <p className="mt-4"><strong>Skills:</strong> {fitResult.skills.join(", ")}</p>
-            <p className="mt-4"><strong>Job Description:</strong> {fitResult.description}</p>
+            <h2 className="text-2xl font-bold">
+              Fit Score: {fitResult.fit_score.toFixed(2)}%
+            </h2>
+            <p className="mt-4">
+              <strong>First Name:</strong> {fitResult.first_name}
+            </p>
+            <p className="mt-4">
+              <strong>Last Name:</strong> {fitResult.last_name}
+            </p>
+            <p className="mt-4">
+              <strong>Name:</strong> {fitResult.full_name}
+            </p>
+            <p className="mt-4">
+              <strong>Email:</strong> {fitResult.email}
+            </p>
+            <p className="mt-4">
+              <strong>Phone:</strong> {fitResult.phone}
+            </p>
+            <p className="mt-4">
+              <strong>Skills:</strong> {fitResult.skills.join(", ")}
+            </p>
+            <p className="mt-4">
+              <strong>Job Description:</strong> {fitResult.description}
+            </p>
+
+            {/* New sections for education and experience */}
+            <div className="mt-6">
+              <h3 className="text-xl font-semibold">Education</h3>
+              {fitResult.education &&
+              fitResult.education.Education &&
+              Array.isArray(fitResult.education.Education) &&
+              fitResult.education.Education.length > 0 ? (
+                <ul className="list-disc ml-6">
+                  {fitResult.education.Education.map((edu, index) => (
+                    <li key={index} className="mt-2">
+                      <strong>{edu.Degree}</strong> at {edu.Institution} (
+                      {edu.Year}){edu.CGPA && <span> - CGPA: {edu.CGPA}</span>}
+                      {edu.Percentage && (
+                        <span> - Percentage: {edu.Percentage}</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No education details found.</p>
+              )}
+            </div>
+
+            <div className="mt-6">
+              <h3 className="text-xl font-semibold">Experience</h3>
+              {Array.isArray(fitResult.experience) &&
+              fitResult.experience.length > 0 ? (
+                <ul className="list-disc ml-6">
+                  {fitResult.experience.map((exp, index) => (
+                    <li key={index} className="mt-2">
+                      <strong>{exp.job_title}</strong> at {exp.company} (
+                      {exp.start_year} - {exp.end_year})
+                      <br />
+                      {exp.description}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No experience details found.</p>
+              )}
+            </div>
           </div>
         </section>
       )}
@@ -81,27 +140,37 @@ export default function ResumeShortlisting() {
 const jobPositions = [
   {
     title: "Software Engineer",
-    description: "Help us build cutting-edge web applications using the latest technologies.",
-    content: "We're looking for experienced software engineers to join our growing engineering team. You'll be responsible for building and maintaining our core web applications, as well as collaborating with cross-functional teams to deliver high-quality features."
+    description:
+      "Help us build cutting-edge web applications using the latest technologies.",
+    content:
+      "We're looking for experienced software engineers to join our growing engineering team. You'll be responsible for building and maintaining our core web applications, as well as collaborating with cross-functional teams to deliver high-quality features.",
   },
   {
     title: "Product Manager",
-    description: "Lead the development of our flagship product and drive innovation.",
-    content: "We're seeking a talented product manager to join our product team. You'll be responsible for defining the product roadmap, collaborating with cross-functional teams, and ensuring the successful delivery of new features and enhancements."
+    description:
+      "Lead the development of our flagship product and drive innovation.",
+    content:
+      "We're seeking a talented product manager to join our product team. You'll be responsible for defining the product roadmap, collaborating with cross-functional teams, and ensuring the successful delivery of new features and enhancements.",
   },
   {
     title: "UI/UX Designer",
-    description: "Craft intuitive and visually stunning user experiences for our products.",
-    content: "We're looking for a talented UI/UX designer to join our design team. You'll be responsible for creating user-centric designs, conducting user research, and collaborating with cross-functional teams to deliver exceptional user experiences."
+    description:
+      "Craft intuitive and visually stunning user experiences for our products.",
+    content:
+      "We're looking for a talented UI/UX designer to join our design team. You'll be responsible for creating user-centric designs, conducting user research, and collaborating with cross-functional teams to deliver exceptional user experiences.",
   },
   {
     title: "Data Analyst",
-    description: "Analyze and interpret data to drive business insights and decision-making.",
-    content: "We're seeking a data analyst to join our growing data team. You'll be responsible for collecting, analyzing, and interpreting data to uncover valuable insights that inform our business strategy and product development."
-  }
+    description:
+      "Analyze and interpret data to drive business insights and decision-making.",
+    content:
+      "We're seeking a data analyst to join our growing data team. You'll be responsible for collecting, analyzing, and interpreting data to uncover valuable insights that inform our business strategy and product development.",
+  },
 ];
 
 function JobCard({ title, description, content, onFileUpload }) {
+  const fileInputId = `file-upload-${title.replace(/\s+/g, "-").toLowerCase()}`;
+
   return (
     <div className="flex flex-col bg-white rounded-lg shadow-lg p-6">
       <div>
@@ -120,12 +189,12 @@ function JobCard({ title, description, content, onFileUpload }) {
           View Job
         </a>
         <div className="flex items-center gap-2">
-          <label htmlFor={`file-upload-${title.replace(/\s+/g, "-").toLowerCase()}`} className="cursor-pointer">
+          <label htmlFor={fileInputId} className="cursor-pointer">
             <UploadIcon className="w-5 h-5 text-gray-400" />
             <span className="sr-only">Upload resume</span>
           </label>
           <input
-            id={`file-upload-${title.replace(/\s+/g, "-").toLowerCase()}`}
+            id={fileInputId}
             type="file"
             className="hidden"
             onChange={(e) => onFileUpload(e, description)}
@@ -156,4 +225,3 @@ function UploadIcon(props) {
     </svg>
   );
 }
-
