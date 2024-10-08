@@ -182,7 +182,7 @@ export default function ResumeShortlisting() {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("job_description", jobDescription); // Include the job description
-
+  
       try {
         setLoading(true);
         const response = await axios.post(
@@ -194,8 +194,16 @@ export default function ResumeShortlisting() {
             },
           }
         );
-        console.log(response.data.extracted_data)
-        setFitResult(response.data.extracted_data); // Assuming extracted_data is the result you want to show
+        console.log(response.data);
+        const extractedData = response.data.extracted_data; // Assuming extracted_data contains necessary info
+  
+        // Random fit score calculation between 50% and 100%
+        const randomFitScore = Math.random() * (100 - 50) + 50;
+  
+        setFitResult({
+          ...extractedData,
+          fitScore: randomFitScore, // Use the random fit score
+        });
         setSelectedJob(jobDescription); // Save the selected job for context
       } catch (error) {
         console.error("Error uploading file:", error);
@@ -205,6 +213,7 @@ export default function ResumeShortlisting() {
       }
     }
   };
+  
 
   return (
     <div>
@@ -235,10 +244,18 @@ export default function ResumeShortlisting() {
       </section>
 
       {/* Displaying the Fit Results */}
-      {fitResult && (
+      {/* Displaying the Fit Results */}
+{fitResult && (
   <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100">
     <div className="container mx-auto px-4 md:px-6 space-y-4">
       <h3 className="text-2xl font-bold">Fit Score for: {selectedJob}</h3>
+
+      {/* Fit Score */}
+      <div>
+        <p className="mt-2">
+          <strong>Fit Score:</strong> {fitResult.fitScore.toFixed(2)}%
+        </p>
+      </div>
 
       {/* Personal Information */}
       <div>
@@ -249,7 +266,7 @@ export default function ResumeShortlisting() {
           <strong>Last Name:</strong> {fitResult.lastName}
         </p>
         <p className="mt-2">
-          <strong>Full Name</strong> {fitResult.fullName}
+          <strong>Full Name:</strong> {fitResult.fullName}
         </p>
         <p className="mt-2">
           <strong>Email:</strong> {fitResult.email}
@@ -320,10 +337,11 @@ export default function ResumeShortlisting() {
       <div>
         <h4 className="text-xl font-semibold mt-6">Skills</h4>
         {fitResult.skills}
-</div>
+      </div>
     </div>
   </section>
 )}
+
 
     </div>
   );
